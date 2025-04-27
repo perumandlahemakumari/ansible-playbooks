@@ -1,0 +1,27 @@
+---
+- hosts: dev
+  connection: ssh
+
+  tasks:
+  - name: install java
+    command: yum install java-17-amazon-corretto -y
+  - name: download from dlcdn
+    get_url:
+      url: "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.100/bin/apache-tomcat-9.0.100.tar.gz"
+      dest: "/root"
+  - name: untar file
+    command: tar -xvf apache-tomcat-9.0.100.tar.gz
+  - name: rename the file
+    command: mv apache-tomcat-9.0.100 tomcat
+  - name: copy context.xml
+    copy:
+      src: "context.xml"
+      dest: "/root/tomcat/webapps/manager/META-INF/context.xml"
+  - name: copy tomcat-users.xml
+    copy:
+      src: "tomcat-users.xml"
+      dest: "/root/tomcat/conf/tomcat-users.xml"
+  - name: stop the tomcat
+    shell: nohup /root/tomcat/bin/shutdown.sh
+  - name: start the tomcat
+    shell: nohup /root/tomcat/bin/startup.sh
