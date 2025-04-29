@@ -1,0 +1,31 @@
+---
+- name: Setup Apache Web Server
+  hosts: webservers
+  become: yes
+
+  vars:
+    apache_packages:
+      - httpd   # For RHEL/CentOS/Amazon Linux
+    apache_service: httpd
+    index_content: "<h1>Welcome to My Apache Web Server</h1>"
+
+  tasks:
+
+    - name: Install Apache packages
+      package:
+        name: "{{ apache_packages }}"
+        state: present
+
+    - name: Start and enable Apache service
+      service:
+        name: "{{ apache_service }}"
+        state: started
+        enabled: yes
+
+    - name: Create custom index.html
+      copy:
+        content: "{{ index_content }}"
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: '0644'
